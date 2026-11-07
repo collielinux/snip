@@ -1,6 +1,6 @@
 # Threading: the main thread never blocks
 
-Omasnap is a layer-shell overlay. The instant it stops painting — even for
+Snip is a layer-shell overlay. The instant it stops painting — even for
 one dropped frame — it looks broken, because there is nothing else on
 screen to explain the freeze. So the rule is absolute: **the UI thread does
 capture, paint, and input handling, and nothing else.** Anything that can
@@ -59,7 +59,7 @@ the capture loop (grab → crop → classify → accumulate) runs on a worker
 thread so the overlay keeps painting the live page and the mode pills while
 frames come in, however slow the compositor's damage-driven capture is.
 
-`ChromeThemeWatcher` in `src/chrome-theme.cpp` reads and parses Omarchy's theme
+`ChromeThemeWatcher` in `src/chrome-theme.cpp` reads and parses Collie's theme
 files on a worker too. The GUI applies a completed palette and repaints open
 windows; paint handlers only read in-memory values. Debounced filesystem
 notifications trigger reloads, including when the whole theme directory is

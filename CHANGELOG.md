@@ -1,7 +1,7 @@
 # Changelog
 
 User-facing changes, newest first. This changelog starts with 1.20.0;
-earlier development is recorded in the [commit history](https://github.com/omacom/omasnap/commits/main/).
+earlier development is recorded in the [commit history](https://github.com/collielinux/snip/commits/main/).
 
 ## Unreleased
 
@@ -20,13 +20,13 @@ earlier development is recorded in the [commit history](https://github.com/omaco
 - Open an image even when another program's JSON with the same name sits
   beside it (`report.png` next to `report.json`), for `--file` and for editing
   or sharing a `--pin`, instead of failing on it as a broken edit history.
-- A lock file left by a crashed capture no longer gets an unrelated omasnap
+- A lock file left by a crashed capture no longer gets an unrelated snip
   process (such as a pin that reused its process ID) closed by the next
   capture; a lock nobody holds is reclaimed instead.
 - Preserve native pixels when exporting an unannotated capture without a
   backdrop. Fractional selection edges no longer smooth-resize the whole
   image just to remove an outward-rounded boundary pixel.
-- Ignore an `Omasnap logical size` tag or edit-log size that claims a display
+- Ignore an `Snip logical size` tag or edit-log size that claims a display
   scale above 4×, so an altered PNG can no longer multiply the export frame
   (a 400×400 image tagged 40x40 exported at 1680×1680).
 - `--clipboard` stops reading an image format at 256 MiB and tries the next
@@ -49,11 +49,11 @@ earlier development is recorded in the [commit history](https://github.com/omaco
 ### Added
 
 - `--notify` announces saved captures in a notification with the capture's
-  thumbnail and size and **Open** and **Edit** buttons, like Omarchy's saved
-  screen recordings, instead of a timed preview, worded in Omarchy's language
-  through `omarchy-i18n`. It covers fresh and scroll
-  captures and saving from the editor or Save As. Omarchy passes it once its
-  `omarchy-notification-send` takes `--action` buttons.
+  thumbnail and size and **Open** and **Edit** buttons, like Collie's saved
+  screen recordings, instead of a timed preview, worded in Collie's language
+  through `collie-i18n`. It covers fresh and scroll
+  captures and saving from the editor or Save As. Collie passes it once its
+  `collie-notification-send` takes `--action` buttons.
 
 ## 1.22.0
 
@@ -108,7 +108,7 @@ earlier development is recorded in the [commit history](https://github.com/omaco
   moving it elsewhere on screen, including Super+left-drag.
 - Use the active window-border color for the pin icon while a preview is pinned.
 - Match pins, editor controls, tooltips, window-selection highlights, and crop
-  outlines to Omarchy's theme files, with live updates when the theme changes.
+  outlines to Collie's theme files, with live updates when the theme changes.
 - Hide the cursor and drag handles while placing arrow heads, tails, bends, and
   line endpoints; restore them on release or cancellation.
 
@@ -165,7 +165,7 @@ earlier development is recorded in the [commit history](https://github.com/omaco
 - Match the editor's background padding, image corners, and scaled shadows to
   saved captures, and fit the complete background frame in the preview.
 - Keep previews and pins frameless at the compositor level across theme changes,
-  preventing a second outline around the frame Omasnap draws.
+  preventing a second outline around the frame Snip draws.
 - Suppress the armed tool while moving or resizing an annotation, including
   the cut-band preview, and keep that tool ready for the next canvas gesture.
 - Keep screenshot content anchored while dragging crop handles, then re-center
@@ -211,7 +211,7 @@ earlier development is recorded in the [commit history](https://github.com/omaco
 - Reduce pointer repaint work on large displays and detect highlighter text
   rows on a worker to keep the overlay responsive.
 - Reduce startup time and memory use by bypassing the GTK platform theme;
-  overlay fonts and colors are supplied by Omasnap.
+  overlay fonts and colors are supplied by Snip.
 - Preserve the selected rectangle when switching between Region and
   Scrolling Region capture.
 
@@ -234,7 +234,7 @@ earlier development is recorded in the [commit history](https://github.com/omaco
 - Center labeled Edit and Copy buttons over previews, without tooltips, and
   place the Lucide pin icon beside Close. Other controls use compact, dark
   tooltips with the chrome font.
-- Show Omasnap in the application launcher.
+- Show Snip in the application launcher.
 - Pass notification click actions as separate arguments.
 - Keep the editor viewport and text draft aligned when its window resizes.
 - Retry failed pin and editor placement, and require an ownership token
@@ -270,11 +270,11 @@ earlier development is recorded in the [commit history](https://github.com/omaco
 - Keep the toolbar, capture tabs, hotkey legend, and canvas geometry aligned.
 - Remove the pixels actually covered by a cut-band drag.
 
-[Unreleased changes](https://github.com/omacom/omasnap/compare/v1.25.0...main)
-· [1.25.0 changes](https://github.com/omacom/omasnap/compare/v1.24.0...v1.25.0)
-· [1.24.0 changes](https://github.com/omacom/omasnap/compare/v1.23.0...v1.24.0)
-· [1.23.0 changes](https://github.com/omacom/omasnap/compare/v1.22.0...v1.23.0)
-· [1.22.0 changes](https://github.com/omacom/omasnap/compare/v1.21.0...v1.22.0)
-· [1.21.0 changes](https://github.com/omacom/omasnap/compare/v1.20.1...v1.21.0)
-· [1.20.1 changes](https://github.com/omacom/omasnap/compare/v1.20.0...v1.20.1)
-· [1.20.0 changes](https://github.com/omacom/omasnap/compare/v1.19.1...v1.20.0)
+[Unreleased changes](https://github.com/collielinux/snip/compare/v1.25.0...main)
+· [1.25.0 changes](https://github.com/collielinux/snip/compare/v1.24.0...v1.25.0)
+· [1.24.0 changes](https://github.com/collielinux/snip/compare/v1.23.0...v1.24.0)
+· [1.23.0 changes](https://github.com/collielinux/snip/compare/v1.22.0...v1.23.0)
+· [1.22.0 changes](https://github.com/collielinux/snip/compare/v1.21.0...v1.22.0)
+· [1.21.0 changes](https://github.com/collielinux/snip/compare/v1.20.1...v1.21.0)
+· [1.20.1 changes](https://github.com/collielinux/snip/compare/v1.20.0...v1.20.1)
+· [1.20.0 changes](https://github.com/collielinux/snip/compare/v1.19.1...v1.20.0)

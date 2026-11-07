@@ -136,7 +136,7 @@ bool runPngSmoke(QString &error) {
                                  QStringLiteral("4x4x4"), QStringLiteral("4.5x4"),
                                  QStringLiteral("999999999999999999x4"),
                                  QStringLiteral("4x4α")}) {
-    image.setText(QStringLiteral("Omasnap logical size"), invalid);
+    image.setText(QStringLiteral("Snip logical size"), invalid);
     if (!pngLogicalSize(image).isEmpty() || !roundTrip(image, error)) {
       error = QStringLiteral("Malformed logical size was accepted or damaged PNG metadata");
       return false;
@@ -206,7 +206,7 @@ bool runPngLogicalSizeBoundsSmoke(QString &error) {
   QImage small(400, 400, QImage::Format_RGB32);
   small.fill(Qt::white);
   for (const char *tag : {"40x40", "99x99", "1x1", "400x10"}) {
-    small.setText(QStringLiteral("Omasnap logical size"), QString::fromLatin1(tag));
+    small.setText(QStringLiteral("Snip logical size"), QString::fromLatin1(tag));
     CaptureData capture;
     describeFileCapture(capture, small, {});
     const QSizeF scale = outputScale(capture);
@@ -225,7 +225,7 @@ bool runPngLogicalSizeBoundsSmoke(QString &error) {
     }
   }
   // An edit log's preview size sets the same scale and obeys the same bound.
-  small.setText(QStringLiteral("Omasnap logical size"), QString());
+  small.setText(QStringLiteral("Snip logical size"), QString());
   OperationLog log;
   log.previewSize = {40, 40};
   CaptureData capture;

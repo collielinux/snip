@@ -49,7 +49,7 @@ template <typename Predicate> bool waitUntil(Predicate ready) {
 }
 QFileDialog *saveDialog() {
   for (QWidget *widget : QApplication::topLevelWidgets()) {
-    if (widget->objectName() == QStringLiteral("omasnap-save-as"))
+    if (widget->objectName() == QStringLiteral("snip-save-as"))
       return qobject_cast<QFileDialog *>(widget);
   }
   return nullptr;
@@ -62,14 +62,14 @@ bool runSaveAsSmoke(QString &error) {
     error = QStringLiteral("Could not create Save As test directory");
     return false;
   }
-  const QByteArray previousRecents = qgetenv("OMASNAP_RECENT_DIR");
+  const QByteArray previousRecents = qgetenv("SNIP_RECENT_DIR");
   const auto restoreRecents = qScopeGuard([&] {
     if (previousRecents.isNull())
-      qunsetenv("OMASNAP_RECENT_DIR");
+      qunsetenv("SNIP_RECENT_DIR");
     else
-      qputenv("OMASNAP_RECENT_DIR", previousRecents);
+      qputenv("SNIP_RECENT_DIR", previousRecents);
   });
-  qputenv("OMASNAP_RECENT_DIR", directory.filePath(QStringLiteral("recent")).toUtf8());
+  qputenv("SNIP_RECENT_DIR", directory.filePath(QStringLiteral("recent")).toUtf8());
   const QString target = directory.filePath(QStringLiteral("chosen.png"));
   QImage original(100, 80, QImage::Format_ARGB32);
   original.fill(Qt::red);
@@ -298,10 +298,10 @@ bool runSaveAsSmoke(QString &error) {
   }
   // Under --notify, Save As announces the chosen file instead of previewing it.
   {
-    qputenv("OMASNAP_NOTIFY", "1");
-    const auto restoreNotify = qScopeGuard([] { qunsetenv("OMASNAP_NOTIFY"); });
+    qputenv("SNIP_NOTIFY", "1");
+    const auto restoreNotify = qScopeGuard([] { qunsetenv("SNIP_NOTIFY"); });
     // Keep the wording English whatever this desktop's language is.
-    QFile i18n(directory.filePath(QStringLiteral("omarchy-i18n")));
+    QFile i18n(directory.filePath(QStringLiteral("collie-i18n")));
     if (!i18n.open(QIODevice::WriteOnly) ||
         i18n.write("#!/bin/sh\nprintf '%s' \"$1\"\n") < 0 ||
         !i18n.setPermissions(QFileDevice::ReadOwner | QFileDevice::ExeOwner))
@@ -314,7 +314,7 @@ bool runSaveAsSmoke(QString &error) {
     QStringList toast;
     bool previewed = false;
     editor.setProcessLauncherForTest([&](const QString &program, const QStringList &args) {
-      if (program == QStringLiteral("omarchy-notification-send"))
+      if (program == QStringLiteral("collie-notification-send"))
         toast = args;
       else
         previewed = true;

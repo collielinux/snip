@@ -1,8 +1,8 @@
-# Omasnap
+# Snip
 
 See the [changelog](CHANGELOG.md) for release highlights and unreleased changes.
 
-A native Wayland screenshot and annotation overlay designed for Omarchy and Hyprland.
+A native Wayland screenshot and annotation overlay designed for Collie and Hyprland.
 It captures the focused monitor before mapping an exclusive layer-shell surface, so the
 editor never appears in its own screenshot. The editor retains annotations as movable,
 resizable vector layers and preserves the monitor's native pixels on scaled displays.
@@ -13,7 +13,7 @@ The preview fades after 7 seconds of idle time. Hovering and unfinished actions
 pause its countdown. The pin button, `Ctrl+P`, `T` while hovered, or dragging the
 preview keeps it on screen.
 
-[![Looping Omasnap demonstration](assets/omasnap.gif)](assets/omasnap.mp4)
+[![Looping Snip demonstration](assets/snip.gif)](assets/snip.mp4)
 
 ## Features
 
@@ -70,14 +70,14 @@ preview keeps it on screen.
   Moving or resizing an existing layer suspends the armed tool's action until
   release, then leaves the tool ready for the next canvas gesture.
 - Pin a finished capture as a bottom-right floating compositor window, launched
-  from the same `omasnap` executable and visible on every workspace.
+  from the same `snip` executable and visible on every workspace.
   Pins form a compact deck with the recents shelf's alternating tilt while
   idle; hover to straighten and fan them out.
   Dropping a pin partly off-screen or underneath a bar brings it fully back
   inside the monitor where the drag started, with the same 14-pixel gap as
   the stack from any screen edge or reserved bar area.
-- Crash-resistant working documents under `/run/user/<UID>/omasnap/` (falling back to
-  a private `/tmp/omasnap-<UID>/`): the original source image plus a sidecar JSON
+- Crash-resistant working documents under `/run/user/<UID>/snip/` (falling back to
+  a private `/tmp/snip-<UID>/`): the original source image plus a sidecar JSON
   operation log. Undo still works after a crash or `--file` reopen. Saving and
   copying write a normal flattened PNG to the clipboard or `~/Pictures/Screenshots`.
 - Verified PNG clipboard output through `wl-copy`/`wl-paste`, plus timestamped files
@@ -89,12 +89,12 @@ preview keeps it on screen.
   hides the shelf, and it stays hidden until `Space` brings it back.
 - Correct native-pixel export on fractional or integer-scaled monitors.
 - Pins, editor controls, tooltips, and selection outlines follow the current
-  Omarchy theme, including live theme changes. Screenshot pixels, annotation
+  Collie theme, including live theme changes. Screenshot pixels, annotation
   colors, and exported backdrops keep their chosen colors.
 
 ## Platform scope
 
-The supported target is **Wayland + Hyprland**, with Omarchy as the primary integration.
+The supported target is **Wayland + Hyprland**, with Collie as the primary integration.
 The renderer, layer surface, clipboard, and monitor capture use Wayland protocols;
 monitor/window discovery currently calls `hyprctl`. The focused output is captured
 in-process through `ext-image-copy-capture` before the layer maps. Selection displays
@@ -108,46 +108,46 @@ Runtime commands used by the application:
 - `hyprctl`
 - `wl-copy` and `wl-paste`
 - `tesseract`
-- `omarchy-notification-send` when available; saved captures include a thumbnail and
-  reopen in Omasnap when clicked. Notification failure does not invalidate output.
+- `collie-notification-send` when available; saved captures include a thumbnail and
+  reopen in Snip when clicked. Notification failure does not invalidate output.
 
-## Install on Omarchy
+## Install on Collie
 
-Clone the repository and run the Omarchy installer:
+Clone the repository and run the Collie installer:
 
 ```bash
-git clone https://github.com/tobi/omasnap.git
-cd omasnap
-./install-omarchy
+git clone https://github.com/tobi/snip.git
+cd snip
+./install-collie
 ```
 
-The installer uses Omarchy's package helper for missing dependencies, builds in
-`~/.cache/omasnap`, and installs under `~/.local`. It does not modify
+The installer uses Collie's package helper for missing dependencies, builds in
+`~/.cache/snip`, and installs under `~/.local`. It does not modify
 Hyprland configuration.
 
-Pinned-window placement uses the Lua dispatcher on Omarchy’s Hyprland.
+Pinned-window placement uses the Lua dispatcher on Collie’s Hyprland.
 
 ### Hyprland binding
 
-Paste this into a Lua config loaded after `require("default.hypr.omarchy")`:
+Paste this into a Lua config loaded after `require("default.hypr.collie")`:
 
 ```lua
 hl.unbind("PRINT")
 hl.unbind("F12")
 hl.unbind("ALT + SHIFT + 4")
 
-o.bind("PRINT", "Screenshot", "omasnap")
-o.bind("F12", "Screenshot", "omasnap")
-o.bind("ALT + SHIFT + 4", "Screenshot", "omasnap")
+o.bind("PRINT", "Screenshot", "snip")
+o.bind("F12", "Screenshot", "snip")
+o.bind("ALT + SHIFT + 4", "Screenshot", "snip")
 
 hl.layer_rule({
-  match = { namespace = "^omasnap$" },
+  match = { namespace = "^snip$" },
   no_anim = true,
   animation = "none",
 })
 ```
 
-Do not add `no_screen_share = true` to the Omasnap layer rule. Hyprland
+Do not add `no_screen_share = true` to the Snip layer rule. Hyprland
 replaces an excluded layer's entire rectangle with black in captures, including
 transparent areas. Because the scrolling overlay covers the monitor, that rule
 blacks out the live region and prevents stitching. If you used an earlier version
@@ -165,10 +165,10 @@ hyprctl binds -j | jq -c \
   '[.[] | select(.description == "Screenshot") | {modmask,key,description}]'
 ```
 
-`omarchy plugin add` is intentionally not used. Omarchy plugins are Quickshell QML
+`collie plugin add` is intentionally not used. Collie plugins are Quickshell QML
 extensions; they do not install native executables or system packages.
 
-Set `OMASNAP_PREFIX` before running `install-omarchy` to use a prefix other than
+Set `SNIP_PREFIX` before running `install-collie` to use a prefix other than
 `~/.local`.
 
 ### Manual Arch Linux build
@@ -194,21 +194,21 @@ cmake --install build
 
 The install step places:
 
-- `~/.local/bin/omasnap`
-- `~/.local/share/applications/omasnap.desktop`
-- `~/.local/share/licenses/omasnap/Neucha-OFL.txt`
-- `~/.local/share/licenses/omasnap/JetBrainsMono-OFL.txt`
-- `~/.local/share/licenses/omasnap/Inter-OFL.txt`
-- `~/.local/share/licenses/omasnap/Lucide-ISC.txt`
+- `~/.local/bin/snip`
+- `~/.local/share/applications/snip.desktop`
+- `~/.local/share/licenses/snip/Neucha-OFL.txt`
+- `~/.local/share/licenses/snip/JetBrainsMono-OFL.txt`
+- `~/.local/share/licenses/snip/Inter-OFL.txt`
+- `~/.local/share/licenses/snip/Lucide-ISC.txt`
 
-Launch Omasnap from the application launcher by searching for its name, or use
+Launch Snip from the application launcher by searching for its name, or use
 the screenshot keybindings above.
 
 Ensure `~/.local/bin` is on `PATH`, then verify the installed CLI:
 
 ```bash
-omasnap --version
-omasnap --help
+snip --version
+snip --help
 ```
 
 ## CLI capture modes
@@ -218,25 +218,25 @@ click a window to capture it, or click outside every window to capture the
 focused monitor:
 
 ```bash
-omasnap
+snip
 ```
 
 Explicit starting modes:
 
 ```bash
-omasnap --capture-region
-omasnap --capture-window
-omasnap --capture-fullscreen
+snip --capture-region
+snip --capture-window
+snip --capture-fullscreen
 ```
 
 Scroll capture stitches a region that is taller (or wider) than the screen:
 
 ```bash
-omasnap --scroll
+snip --scroll
 ```
 
 Drag a region, then pick a direction: **Scroll ↓ / →** scrolls the page
-yourself while omasnap captures each step, and **Auto ↓ / →** scrolls it for
+yourself while snip captures each step, and **Auto ↓ / →** scrolls it for
 you, one acknowledged notch at a time, stopping when the page stops moving.
 The frames are aligned and stitched into one image, copied, and shown in a timed
 preview. Keep it with the pin button, `Ctrl+P`, or `T` while hovered, or open its
@@ -245,10 +245,10 @@ editor to annotate it; `Ctrl`+wheel zooms and the wheel scrolls it.
 Positional capture modes are also accepted:
 
 ```bash
-omasnap region
-omasnap windows
-omasnap fullscreen
-omasnap smart
+snip region
+snip windows
+snip fullscreen
+snip smart
 ```
 
 These options choose what is initially selected. Completing a selection saves it, copies it,
@@ -272,9 +272,9 @@ fullscreen captures output immediately. Quick output cannot be combined with `--
 `--clipboard`, or `--pin`.
 
 Add `--notify` to announce every saved capture in a notification instead of a preview,
-like Omarchy's saved screen recordings: the capture's thumbnail and size, with **Open**
-to view the saved PNG and **Edit** to annotate it, worded in Omarchy's language through
-`omarchy-i18n`. Omarchy passes it once its `omarchy-notification-send` takes `--action`
+like Collie's saved screen recordings: the capture's thumbnail and size, with **Open**
+to view the saved PNG and **Edit** to annotate it, worded in Collie's language through
+`collie-i18n`. Collie passes it once its `collie-notification-send` takes `--action`
 buttons. Pins and editors opened from that
 capture keep the option. Copy-only captures still show their preview, since there is
 no file to open.
@@ -282,7 +282,7 @@ no file to open.
 ### One instance, toggled by the same hotkey
 
 Only one capture overlay runs at a time, guarded by a lock file in the runtime snapshot
-directory. Starting omasnap while an overlay is open sends the running instance `SIGTERM`,
+directory. Starting snip while an overlay is open sends the running instance `SIGTERM`,
 which it handles with a clean Qt shutdown; the new process then exits without capturing.
 Pressing `PRINT` therefore opens the overlay and pressing it again dismisses it.
 
@@ -309,13 +309,13 @@ Exit codes:
 
 ### Edit an existing or clipboard image
 
-Point omasnap at any readable image and it opens straight into the annotation editor
+Point snip at any readable image and it opens straight into the annotation editor
 with the whole image selected, skipping the screen-capture step:
 
 ```bash
-omasnap ~/Pictures/Screenshots/screenshot-2026-08-11_10-00-00.png
+snip ~/Pictures/Screenshots/screenshot-2026-08-11_10-00-00.png
 # or
-omasnap --file /path/to/capture.png
+snip --file /path/to/capture.png
 ```
 
 New PNG exports retain their logical display size, so reopening a 2× capture
@@ -327,7 +327,7 @@ alone is not treated as a screenshot's display scale.
 To open the image currently on the Wayland clipboard:
 
 ```bash
-omasnap --clipboard
+snip --clipboard
 ```
 
 The clipboard must offer readable image data. Text-only clipboard contents return an
@@ -335,15 +335,15 @@ error instead of opening an empty editor. Reading an image format stops as soon 
 passes 256 MiB, and the next offered format is tried; the image is refused if none fits.
 
 File URLs are accepted too. A saved capture notification's "Click to edit" action launches
-`omasnap` on the finished screenshot, so it can be reopened and re-annotated. The action is
-handed to `omarchy-notification-send` as `--exec <omasnap> <file:// URL>`, separate argv
+`snip` on the finished screenshot, so it can be reopened and re-annotated. The action is
+handed to `collie-notification-send` as `--exec <snip> <file:// URL>`, separate argv
 words after a trailing `--exec`, which the shell runs directly without shell parsing.
 
 ### Recent captures
 
 Every completed capture keeps its working document, source plus operation log,
 on a shelf of the five most recent under
-`~/.local/state/omasnap/recent/` (`OMASNAP_RECENT_DIR` overrides). The select
+`~/.local/state/snip/recent/` (`SNIP_RECENT_DIR` overrides). The select
 overlay shows them as a small stack of cards on the right; hovering fans them out
 and clicking one reopens that capture in the editor, undo history intact, in place
 of a new screenshot. `Space` hides the shelf, and later captures keep it hidden
@@ -357,8 +357,8 @@ The output still completes immediately. Persistence errors are logged.
 
 ### Theme
 
-Omasnap reads the current Omarchy palette from
-`~/.local/state/omarchy/current/theme/colors.toml` and uses the surface, control,
+Snip reads the current Collie palette from
+`~/.local/state/collie/current/theme/colors.toml` and uses the surface, control,
 tooltip, and border colors in `shell.toml` when present. Theme changes update
 open windows automatically; missing or invalid values use readable defaults.
 Chrome fonts stay pinned, and loading colors does not load a desktop Qt theme
@@ -366,9 +366,9 @@ plugin or add a startup dependency.
 
 ### Configuration (optional)
 
-Omasnap has no settings UI and runs fine with no config at all. If you want to
+Snip has no settings UI and runs fine with no config at all. If you want to
 change where screenshots land or what they are called, create
-`~/.config/omasnap/omasnap.conf` (INI format); every key is optional:
+`~/.config/snip/snip.conf` (INI format); every key is optional:
 
 ```ini
 [editor]
@@ -427,18 +427,18 @@ The default keeps the date first so the folder always sorts chronologically:
 literal text (`screenshot-` is just a string). A name that already exists
 gets `-2`, `-3`, … appended.
 
-Environment overrides (`OMASNAP_SCREENSHOT_DIR` takes precedence over the config):
+Environment overrides (`SNIP_SCREENSHOT_DIR` takes precedence over the config):
 
 ```bash
-OMASNAP_SCREENSHOT_DIR="$HOME/Pictures/Captures" omasnap
-OMASNAP_OCR_LANGS="eng+deu" omasnap
+SNIP_SCREENSHOT_DIR="$HOME/Pictures/Captures" snip
+SNIP_OCR_LANGS="eng+deu" snip
 # Thai plus English:
-OMASNAP_OCR_LANGS="tha+eng" omasnap
+SNIP_OCR_LANGS="tha+eng" snip
 ```
 
 Install the corresponding Tesseract language data before adding a language to
-`OMASNAP_OCR_LANGS`. When unset, omasnap falls back to Omarchy's
-`OMARCHY_OCR_LANGS` (which commonly includes the user's script, e.g.
+`SNIP_OCR_LANGS`. When unset, snip falls back to Collie's
+`COLLIE_OCR_LANGS` (which commonly includes the user's script, e.g.
 `tha+eng`), then to `eng`.
 
 ## Controls
@@ -470,7 +470,7 @@ controls to return focus from the live page.
 | `Tab` / `Shift+Tab` | Cycle the region's shape: free (default), square, 3:4, 16:9; works mid-drag |
 | `S` | Toggle scrolling-region mode |
 | `E` / `A` | Toggle annotation after capture; the capture guide shows on/off, and the choice also applies to scrolling captures |
-| `R` | Restore the last drawn region, including from a previous Omasnap launch in this login session (same monitor and overlay size) |
+| `R` | Restore the last drawn region, including from a previous Snip launch in this login session (same monitor and overlay size) |
 | `SUPER + Arrow` | Move among windows in window mode |
 | `Enter` | Capture the highlighted window |
 | `Ctrl+A` | Select the full focused monitor |
@@ -478,8 +478,8 @@ controls to return focus from the live page.
 | `Space` | Hide or show the recent captures; the choice is remembered |
 | `Esc` | Dismiss; cancel a selection drag if one is in progress |
 
-Region memory is stored in Omasnap's private runtime directory. It survives
-closing and reopening Omasnap and lasts until those runtime files are removed
+Region memory is stored in Snip's private runtime directory. It survives
+closing and reopening Snip and lasts until those runtime files are removed
 (normally when the login session ends). A region from another monitor, a
 different overlay size, or outside the current screen is ignored; draw a new
 region after changing the display layout.
@@ -553,12 +553,12 @@ the preview available throughout annotation.
 
 In the editor, `Ctrl+P` or `P` renders a capture that stays pinned. It writes a
 `pin-<pid>-<n>-<random>.png` under the runtime snapshot directory, and launches
-the same `omasnap` executable in
+the same `snip` executable in
 detached pin mode. Hyprland floats and pins each window on every workspace.
 Idle pins overlap in a compact deck at the focused monitor's bottom-right
 corner, newest in front. The front card stays straight; the cards behind it
 alternate the same growing lean as the recents shelf: −3°, +6°, −9°, +12°.
-Omasnap paints the rounded frames with the images so their edges tilt together,
+Snip paints the rounded frames with the images so their edges tilt together,
 with transparent corners that take no input. Theme changes keep this single frame
 without adding a second compositor outline.
 Hover to straighten and fan them upward into fully exposed cards, wrapping into
@@ -668,7 +668,7 @@ For live launch profiling, the binary has an opt-in millisecond trace from `main
 through the first completed overlay paint:
 
 ```bash
-OMASNAP_PROFILE_STARTUP=1 ./build/omasnap 2>startup.log
+SNIP_PROFILE_STARTUP=1 ./build/snip 2>startup.log
 ```
 
 The trace also breaks native capture into Wayland registry, buffer allocation, frame wait,
@@ -689,13 +689,13 @@ The capture and annotation workflow is inspired by three excellent screenshot to
   approachable annotation toolbar.
 
 Thanks to their authors and contributors for establishing the interaction patterns that made
-this project possible. Omasnap is an independent implementation and is not
+this project possible. Snip is an independent implementation and is not
 affiliated with those projects.
 
 ## Project history
 
-This standalone repository was extracted with `git filter-repo` from the original Omarchy
-system-customization repository. The former `omasnap/` directory was promoted to
+This standalone repository was extracted with `git filter-repo` from the original Collie
+system-customization repository. The former `snip/` directory was promoted to
 the repository root while retaining its relevant commit history.
 
 The bundled Neucha, JetBrains Mono, and Inter Display fonts are distributed

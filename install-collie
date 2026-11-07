@@ -2,15 +2,15 @@
 set -euo pipefail
 
 repo_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-prefix="${OMASNAP_PREFIX:-$HOME/.local}"
-build_dir="${XDG_CACHE_HOME:-$HOME/.cache}/omasnap/build"
+prefix="${SNIP_PREFIX:-$HOME/.local}"
+build_dir="${XDG_CACHE_HOME:-$HOME/.cache}/snip/build"
 
-if ! command -v omarchy-pkg-add >/dev/null; then
-  printf 'install-omarchy: omarchy-pkg-add is unavailable; this installer requires Omarchy\n' >&2
+if ! command -v collie-pkg-add >/dev/null; then
+  printf 'install-collie: collie-pkg-add is unavailable; this installer requires Collie\n' >&2
   exit 1
 fi
 
-omarchy-pkg-add \
+collie-pkg-add \
   base-devel cmake ninja pkgconf qt6-base layer-shell-qt \
   wayland wayland-protocols libdeflate wl-clipboard xdg-utils \
   tesseract tesseract-data-eng
@@ -21,4 +21,4 @@ cmake -S "$repo_dir" -B "$build_dir" -G Ninja \
 cmake --build "$build_dir" --parallel
 cmake --install "$build_dir"
 
-"$prefix/bin/omasnap" --version
+"$prefix/bin/snip" --version

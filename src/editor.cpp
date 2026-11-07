@@ -858,7 +858,7 @@ CaptureEditor::CaptureEditor(CaptureData capture, CaptureMode mode,
       seedConfiguredBackground(defaultStyle);
     }
   }
-  setWindowTitle(QStringLiteral("Omasnap"));
+  setWindowTitle(QStringLiteral("Snip"));
   setWindowFlags(Qt::Window | Qt::FramelessWindowHint |
                  Qt::WindowStaysOnTopHint);
   setAttribute(Qt::WA_TranslucentBackground);
@@ -3488,7 +3488,7 @@ void CaptureEditor::handOffEditor(bool toWindow) {
           pinDocument->preserveForEditor();
         return QString();
       }
-      error = QStringLiteral("Could not start omasnap");
+      error = QStringLiteral("Could not start snip");
     }
     QFile::remove(path);
     QFile::remove(operationLogPath(path));

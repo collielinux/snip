@@ -71,12 +71,12 @@ QString editorFloatRuleScript(bool floating) {
   // so a floating session's rule cannot leak into tiled use. The title
   // pattern skips the pins, whose titles have no space after the name.
   return floating ? QStringLiteral(
-                        "hl.window_rule({ name = \"omasnap-editor-float\", "
-                        "match = { title = \"^omasnap( .+)?$\" }, "
+                        "hl.window_rule({ name = \"snip-editor-float\", "
+                        "match = { title = \"^snip( .+)?$\" }, "
                         "float = true, center = true })")
                   : QStringLiteral(
-                        "hl.window_rule({ name = \"omasnap-editor-float\", "
-                        "match = { title = \"^omasnap( .+)?$\" }, "
+                        "hl.window_rule({ name = \"snip-editor-float\", "
+                        "match = { title = \"^snip( .+)?$\" }, "
                         "enabled = false })");
 }
 
@@ -98,5 +98,5 @@ bool loadEditorWindowBackdropOpaque(const QString &filePath) {
 
 QString defaultConfigPath() {
   return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) +
-         QStringLiteral("/omasnap/omasnap.conf");
+         QStringLiteral("/snip/snip.conf");
 }

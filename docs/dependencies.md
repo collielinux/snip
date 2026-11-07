@@ -20,7 +20,7 @@ That's it. No JSON library (Qt's `QJsonDocument` handles `hyprctl -j`
 output), no HTTP,
 no logging framework, no CLI-parsing library beyond `QCommandLineParser`,
 no general config-file parser beyond `QSettings` (used for the one optional INI
-file — see below). The theme adapter reads a bounded scalar subset of Omarchy's
+file — see below). The theme adapter reads a bounded scalar subset of Collie's
 TOML color files with Qt; it adds no parser library.
 
 `src/png.cpp` writes ordinary 8-bit RGB/RGBA PNGs using libdeflate at level 1.
@@ -28,7 +28,7 @@ On a captured 6K desktop, Qt's default PNG encoding took about 3 seconds;
 even its fastest compressed setting took about 700 ms. Libdeflate brought
 compression to about 150 ms with identical decoded pixels and similar file
 size. It earns its dependency by removing that capture-to-preview delay.
-The fast encoder also writes Omasnap's small logical-size PNG text field, so
+The fast encoder also writes Snip's small logical-size PNG text field, so
 standalone captures reopen at their original display size without resampling.
 Qt still reads every image and writes images with profiles/other text/offset metadata,
 high-bit-depth formats, and captures exceeding the encoder's 128 MiB filtered
@@ -37,10 +37,10 @@ is preserved on both paths. No quality or compression setting is exposed.
 
 ## Runtime: external processes, not libraries
 
-Omasnap shells out to a small number of existing Omarchy/Arch tools instead
+Snip shells out to a small number of existing Collie/Arch tools instead
 of linking their libraries in-process. This is intentional: a `QProcess`
-call to a well-maintained CLI tool that's already on every Omarchy install
-is a dependency Omasnap doesn't have to build, version, or debug — the
+call to a well-maintained CLI tool that's already on every Collie install
+is a dependency Snip doesn't have to build, version, or debug — the
 alternative (vendoring an OCR engine, a clipboard protocol implementation,
 or a compositor IPC client) would be strictly more code and more risk for
 no user-visible benefit.
@@ -52,7 +52,7 @@ no user-visible benefit.
 | `xdg-open` | Opening a screenshot's containing folder in the default file browser | For Show in folder |
 | `xdg-mime` / `busctl` | Resolve the default folder application and ask it to select the screenshot with `FileManager1.ShowItems` | Optional — falls back to `xdg-open` |
 | `tesseract` | OCR text recognition | Only if OCR is used; missing tesseract fails just that action |
-| `omarchy-notification-send` | Capture-finished notifications | No — falls back silently if absent (checked with `command -v` semantics via failed `QProcess::startDetached`) |
+| `collie-notification-send` | Capture-finished notifications | No — falls back silently if absent (checked with `command -v` semantics via failed `QProcess::startDetached`) |
 
 These run through the small `QProcess` helpers in `src/capture.cpp` and
 `src/pin.cpp`, from a background worker (see [threading.md](threading.md)).
@@ -61,12 +61,12 @@ detached. None run inline on the UI thread.
 
 ## Not a dependency: external Qt platform themes
 
-Omarchy exports `QT_QPA_PLATFORMTHEME=gtk3` for the whole session so Qt apps
-match GTK apps. Omasnap overrides it to `generic` (Qt's built-in theme) for
+Collie exports `QT_QPA_PLATFORMTHEME=gtk3` for the whole session so Qt apps
+match GTK apps. Snip overrides it to `generic` (Qt's built-in theme) for
 its own process in `main()` before `QApplication` is constructed: honouring
 the session value loads the `qgtk3` plugin,
 which initialises GTK3, GLib/GIO and dconf inside the process — measured at
-81–112 ms of `QApplication` construction and ~20–24 MiB of RSS on an Omarchy
+81–112 ms of `QApplication` construction and ~20–24 MiB of RSS on an Collie
 laptop — for hand-painted chrome and Qt's built-in file chooser. The only
 relevant values the external theme supplied were its general and fixed fonts;
 their chrome and application-default replacements
@@ -76,8 +76,8 @@ depend on an external desktop theme, `QStyle`- or palette-derived chrome, or
 icon-theme lookup: each is a startup cost with nothing in this codebase to
 spend it on.
 
-Chrome colors do follow Omarchy. `src/chrome-theme.cpp` reads `colors.toml` and
-the optional `shell.toml` from `~/.local/state/omarchy/current/theme` on a worker.
+Chrome colors do follow Collie. `src/chrome-theme.cpp` reads `colors.toml` and
+the optional `shell.toml` from `~/.local/state/collie/current/theme` on a worker.
 It resolves palette references, control fills, tooltip colors, and solid or
 gradient borders into explicit paint values. Missing or malformed data has
 readable defaults. A filesystem watcher reloads the palette after file or
@@ -87,7 +87,7 @@ palette, alter annotation/export colors, or change the pinned fonts.
 ## Save As dialog
 
 Save As uses the existing Qt Widgets file chooser asynchronously, with pinned
-chrome fonts and the active Omarchy theme, including live theme changes.
+chrome fonts and the active Collie theme, including live theme changes.
 The overlay alone receives its layer-shell
 role through `LayerShellQt::Window::get`; the inherited global shell override
 is cleared so the chooser and overwrite prompts use ordinary xdg-shell windows.
@@ -95,7 +95,7 @@ No native platform-theme plugin or new dependency is needed.
 
 ## The one config file
 
-`~/.config/omasnap/omasnap.conf` is optional INI, read with `QSettings`.
+`~/.config/snip/snip.conf` is optional INI, read with `QSettings`.
 Its existing overrides cover screenshot destination/filename patterns, preset
 colors, editor presentation, and custom backdrop defaults. It is not a
 general settings mechanism. See the "minimally configurable" principle in
@@ -111,7 +111,7 @@ Ask, in order:
    concurrency, text layout, SVG, image I/O). Check before reaching
    further.
 2. **Is this an OS-integration concern better solved by shelling out to an
-   existing Omarchy tool**, the way clipboard, OCR, and notifications are?
+   existing Collie tool**, the way clipboard, OCR, and notifications are?
    A new external-process dependency is far cheaper than a new linked
    library: it doesn't grow the binary, doesn't add a build-time
    dependency, and fails gracefully (a missing/failed process is just an
@@ -132,7 +132,7 @@ adapted to the existing `QPainterPath` renderer. Its ISC notice is in
 SVG renderer, or theme lookup is needed.
 
 Single, statically-linked-where-practical binary, installed to
-`~/.local/bin/omasnap` (see the repository's `install-omarchy`). Every
+`~/.local/bin/snip` (see the repository's `install-collie`). Every
 dependency added here is weight every user carries on every install and
 every update. If a feature can be built with what's already linked, that's
 the implementation to ship.

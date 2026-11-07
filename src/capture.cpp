@@ -307,9 +307,9 @@ QString secureRuntimeDirectory() {
       QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
   if (runtime.isEmpty()) {
     runtime = QDir(QDir::tempPath())
-                  .filePath(QStringLiteral("omasnap-%1").arg(::getuid()));
+                  .filePath(QStringLiteral("snip-%1").arg(::getuid()));
   } else {
-    runtime = QDir(runtime).filePath(QStringLiteral("omasnap"));
+    runtime = QDir(runtime).filePath(QStringLiteral("snip"));
   }
   return ensurePrivateDirectory(runtime) ? QDir::cleanPath(runtime) : QString();
 }
@@ -409,12 +409,12 @@ QString runtimePath(const QString &name) {
 }
 
 QString suggestedScreenshotPathImpl(const QString &appSlug) {
-  // Precedence: OMASNAP_SCREENSHOT_DIR, then [output] directory in the
+  // Precedence: SNIP_SCREENSHOT_DIR, then [output] directory in the
   // config, then ~/Pictures/Screenshots. The filename pattern comes from
   // [output] filename; its default keeps the date first so the folder always
   // sorts chronologically.
   const OutputConfig config = loadOutputConfig(defaultConfigPath());
-  QString root = qEnvironmentVariable("OMASNAP_SCREENSHOT_DIR");
+  QString root = qEnvironmentVariable("SNIP_SCREENSHOT_DIR");
   if (root.isEmpty())
     root = config.directory;
   if (root.isEmpty())
@@ -1389,7 +1389,7 @@ bool captureMonitorPixels(const MonitorInfo &monitor, CaptureData &capture,
     startupTimingMark("hyprctl clients launched");
   }
 
-  const QString testCapture = qEnvironmentVariable("OMASNAP_TEST_CAPTURE");
+  const QString testCapture = qEnvironmentVariable("SNIP_TEST_CAPTURE");
   if (!testCapture.isEmpty()) {
     if (!capture.source.load(testCapture)) {
       error = QStringLiteral("Screen capture failed: could not load test "
@@ -2627,7 +2627,7 @@ bool loadOperationLog(const QString &path, OperationLog &log, QString &error,
     error = QStringLiteral("Could not parse operation log: %1")
                 .arg(parseError.errorString());
     // Well-formed JSON that is not an object is another program's; text that
-    // does not parse may be omasnap's own log, cut short.
+    // does not parse may be snip's own log, cut short.
     if (notOperationLog)
       *notOperationLog = parseError.error == QJsonParseError::NoError;
     return false;
@@ -2636,7 +2636,7 @@ bool loadOperationLog(const QString &path, OperationLog &log, QString &error,
   if (root.value(QStringLiteral("version")).toInt() != 1 ||
       !root.value(QStringLiteral("ops")).isArray()) {
     error = QStringLiteral("Unsupported operation log version");
-    // Every log omasnap writes has a numeric version and an ops array; an
+    // Every log snip writes has a numeric version and an ops array; an
     // object without both is some other program's JSON sharing the name.
     if (notOperationLog)
       *notOperationLog = !root.value(QStringLiteral("version")).isDouble() ||
@@ -2677,7 +2677,7 @@ bool loadSidecarOperationLog(const QString &imagePath, OperationLog &log,
   // The sidecar is only a naming convention: report.png opened from a
   // download folder can sit beside another program's report.json. That file
   // is not this image's edit history, so open the image plain instead of
-  // refusing it. A damaged omasnap log is still an error.
+  // refusing it. A damaged snip log is still an error.
   bool notOperationLog = false;
   OperationLog loaded;
   if (loadOperationLog(sidecar, loaded, error, &notOperationLog)) {
@@ -2686,7 +2686,7 @@ bool loadSidecarOperationLog(const QString &imagePath, OperationLog &log,
   }
   if (!notOperationLog)
     return false;
-  qWarning().noquote() << QStringLiteral("Ignoring %1: not an omasnap "
+  qWarning().noquote() << QStringLiteral("Ignoring %1: not an snip "
                                          "operation log")
                               .arg(sidecar);
   error.clear();
@@ -2710,10 +2710,10 @@ QString recognizeText(const QImage &image, QString &error) {
     return {};
   }
 
-  QString languages = qEnvironmentVariable("OMASNAP_OCR_LANGS");
+  QString languages = qEnvironmentVariable("SNIP_OCR_LANGS");
   if (languages.isEmpty())
     languages =
-        qEnvironmentVariable("OMARCHY_OCR_LANGS", QStringLiteral("eng"));
+        qEnvironmentVariable("COLLIE_OCR_LANGS", QStringLiteral("eng"));
   languages = languages.trimmed();
   // Tesseract's OpenMP build starts a thread per core and spins them; on a
   // screenshot that costs about three times the CPU and adds wall time
@@ -2741,28 +2741,28 @@ QString recognizeText(const QImage &image, QString &error) {
 }
 
 bool notifySavedCaptures() {
-  return qEnvironmentVariableIntValue("OMASNAP_NOTIFY") == 1;
+  return qEnvironmentVariableIntValue("SNIP_NOTIFY") == 1;
 }
 
 namespace {
 
-// The --notify toast's wording lives in Omarchy's catalog under these keys.
-constexpr std::array<std::pair<const char *, const char *>, 4> kOmarchyText{{
+// The --notify toast's wording lives in Collie's catalog under these keys.
+constexpr std::array<std::pair<const char *, const char *>, 4> kCollieText{{
     {"Screenshot saved", "capture.screenshotSaved"},
     {"Screenshot saved and copied", "capture.screenshotSavedCopied"},
     {"Open", "capture.screenshotOpen"},
     {"Edit", "capture.screenshotEdit"},
 }};
 
-/// Looks up the toast's wording with omarchy-i18n, all at once. English
-/// stays wherever a lookup fails or Omarchy has no entry and echoes the key.
-std::function<QString(const QString &)> omarchyText() {
-  std::array<QProcess, kOmarchyText.size()> lookups;
-  for (std::size_t index = 0; index < kOmarchyText.size(); ++index)
-    lookups[index].start(QStringLiteral("omarchy-i18n"),
-                         {QString::fromLatin1(kOmarchyText[index].second)});
+/// Looks up the toast's wording with collie-i18n, all at once. English
+/// stays wherever a lookup fails or Collie has no entry and echoes the key.
+std::function<QString(const QString &)> collieText() {
+  std::array<QProcess, kCollieText.size()> lookups;
+  for (std::size_t index = 0; index < kCollieText.size(); ++index)
+    lookups[index].start(QStringLiteral("collie-i18n"),
+                         {QString::fromLatin1(kCollieText[index].second)});
   QHash<QString, QString> words;
-  for (std::size_t index = 0; index < kOmarchyText.size(); ++index) {
+  for (std::size_t index = 0; index < kCollieText.size(); ++index) {
     QProcess &lookup = lookups[index];
     if (!lookup.waitForFinished(1000)) {
       lookup.kill();
@@ -2771,8 +2771,8 @@ std::function<QString(const QString &)> omarchyText() {
     }
     const QString word = QString::fromUtf8(lookup.readAllStandardOutput()).trimmed();
     if (lookup.exitCode() == 0 && !word.isEmpty() &&
-        word != QLatin1String(kOmarchyText[index].second))
-      words.insert(QString::fromLatin1(kOmarchyText[index].first), word);
+        word != QLatin1String(kCollieText[index].second))
+      words.insert(QString::fromLatin1(kCollieText[index].first), word);
   }
   return [words](const QString &english) { return words.value(english, english); };
 }
@@ -2787,22 +2787,22 @@ QStringList captureNotificationArguments(
     return toast && text ? text(english) : english;
   };
   QStringList arguments{QStringLiteral("-g"), QStringLiteral(""),
-                        QStringLiteral("--app-name"), QStringLiteral("omasnap"),
+                        QStringLiteral("--app-name"), QStringLiteral("snip"),
                         QStringLiteral("-t"),
                         toast ? QStringLiteral("7000") : QStringLiteral("4500"),
                         word(message)};
   if (imagePath.isEmpty())
     return arguments;
-  QString omasnap = QDir(QCoreApplication::applicationDirPath())
-                        .filePath(QStringLiteral("omasnap"));
-  if (!QFileInfo::exists(omasnap))
-    omasnap = QStringLiteral("omasnap");
+  QString snip = QDir(QCoreApplication::applicationDirPath())
+                        .filePath(QStringLiteral("snip"));
+  if (!QFileInfo::exists(snip))
+    snip = QStringLiteral("snip");
   if (!toast) {
     // --exec consumes the rest of the command line as the click command's
-    // argv, which omarchy-notification-send runs without shell parsing. It
+    // argv, which collie-notification-send runs without shell parsing. It
     // must come last and be given as separate words, never one quoted string.
     arguments << QStringLiteral("Click to edit") << QStringLiteral("--image")
-              << imagePath << QStringLiteral("--exec") << omasnap
+              << imagePath << QStringLiteral("--exec") << snip
               << QUrl::fromLocalFile(imagePath).toString(QUrl::FullyEncoded);
     return arguments;
   }
@@ -2821,7 +2821,7 @@ QStringList captureNotificationArguments(
   arguments << QStringLiteral("--image") << imagePath
             << QStringLiteral("--action") << word(QStringLiteral("Open"))
             << QStringLiteral("xdg-open")
-            << QStringLiteral("--action") << word(QStringLiteral("Edit")) << omasnap;
+            << QStringLiteral("--action") << word(QStringLiteral("Edit")) << snip;
   // Edit reopens the capture's layers and undo history from the recent
   // shelf; the saved image, appended by --with, is the fallback once the
   // shelf has dropped it.
@@ -2835,11 +2835,11 @@ QStringList captureNotificationArguments(
 void sendCaptureNotification(
     const QString &message, const QString &imagePath, const QString &recentId,
     const std::function<bool(const QString &, const QStringList &)> &launcher) {
-  const QString program = QStringLiteral("omarchy-notification-send");
+  const QString program = QStringLiteral("collie-notification-send");
   const bool toast = notifySavedCaptures() && !imagePath.isEmpty();
   const QStringList arguments = captureNotificationArguments(
       message, imagePath, recentId, toast,
-      toast ? omarchyText() : std::function<QString(const QString &)>{});
+      toast ? collieText() : std::function<QString(const QString &)>{});
   if (!(launcher ? launcher(program, arguments)
                  : QProcess::startDetached(program, arguments)))
     qWarning("Could not start %s", qPrintable(program));

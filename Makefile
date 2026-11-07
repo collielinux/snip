@@ -25,7 +25,7 @@ build: configure
 	$(CMAKE) --build $(BUILD_DIR) --parallel
 
 smoke: build
-	QT_QPA_PLATFORM=offscreen $(BUILD_DIR)/omasnap-smoke
+	QT_QPA_PLATFORM=offscreen $(BUILD_DIR)/snip-smoke
 
 lint: build
 	@set -eu; \

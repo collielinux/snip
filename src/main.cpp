@@ -128,9 +128,9 @@ QByteArray hyprctlOutput(const QStringList &arguments) {
 
 int main(int argc, char **argv) {
   startupTimingMark("entered main");
-  QCoreApplication::setApplicationName(QStringLiteral("omasnap"));
-  QCoreApplication::setApplicationVersion(QString::fromLatin1(OMASNAP_VERSION));
-  QCoreApplication::setOrganizationName(QStringLiteral("Omarchy"));
+  QCoreApplication::setApplicationName(QStringLiteral("snip"));
+  QCoreApplication::setApplicationVersion(QString::fromLatin1(SNIP_VERSION));
+  QCoreApplication::setOrganizationName(QStringLiteral("Collie"));
   // Resolve editor presentation before Qt consumes its own command-line flags.
   QStringList rawArguments;
   for (int index = 0; index < argc; ++index)
@@ -143,7 +143,7 @@ int main(int argc, char **argv) {
   // Window::get below gives only the capture surface a layer-shell role.
   // Dialogs and pinned windows keep Qt's normal xdg-shell integration.
   qunsetenv("QT_WAYLAND_SHELL_INTEGRATION");
-  // Omarchy exports QT_QPA_PLATFORMTHEME=gtk3 session-wide. Honouring it
+  // Collie exports QT_QPA_PLATFORMTHEME=gtk3 session-wide. Honouring it
   // loads the qgtk3 plugin, which initialises GTK inside this process
   // (measured 81-112 ms of QApplication construction, plus ~20-24 MiB of
   // RSS) for hand-painted chrome and Qt's own file chooser.
@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
   // from the theme. `-platformtheme gtk3` on the command line still
   // overrides this for debugging.
   qputenv("QT_QPA_PLATFORMTHEME", "generic");
-  QGuiApplication::setDesktopFileName(QStringLiteral("omasnap"));
+  QGuiApplication::setDesktopFileName(QStringLiteral("snip"));
   QApplication application(argc, argv);
   startupTimingMark("QApplication constructed");
   // With the external desktop theme bypassed, Qt's default font would be
@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
   startupTimingMark("command line parsed");
   // The environment carries --notify to the pins and editors this starts.
   if (parser.isSet(QStringLiteral("notify")))
-    qputenv("OMASNAP_NOTIFY", "1");
+    qputenv("SNIP_NOTIFY", "1");
   // After parsing: --help and --version exit() inside process(), which skips
   // ~QApplication's wait for the theme loader thread and crashes its teardown.
   initializeChromeTheme();
@@ -301,7 +301,7 @@ int main(int argc, char **argv) {
     return 1;
   }
   QLockFile instanceLock(
-      QDir(runtime).filePath(QStringLiteral("omasnap.instance")));
+      QDir(runtime).filePath(QStringLiteral("snip.instance")));
   // Every capture, quick output included, dismisses a running overlay instead
   // of starting a second one: a late capture would otherwise photograph that overlay.
   // Editing an image always takes over so the requested editor can open.
@@ -310,7 +310,7 @@ int main(int argc, char **argv) {
                                  : InstanceMode::Capture);
   startupTimingMark("instance lock acquired");
   if (lockResult.signalledPid != 0)
-    qInfo().noquote() << QStringLiteral("Asked the running omasnap (pid %1) to "
+    qInfo().noquote() << QStringLiteral("Asked the running snip (pid %1) to "
                                         "quit")
                              .arg(lockResult.signalledPid);
   if (!lockResult.proceed) {
@@ -449,8 +449,8 @@ int main(int argc, char **argv) {
     editor.setWindowedBackdropOpaque(
         loadEditorWindowBackdropOpaque(defaultConfigPath()));
     editor.setWindowTitle(
-        filePath.isEmpty() ? QStringLiteral("omasnap")
-                           : QStringLiteral("omasnap %1")
+        filePath.isEmpty() ? QStringLiteral("snip")
+                           : QStringLiteral("snip %1")
                                  .arg(QFileInfo(filePath).fileName()));
     // Size to the visible selection, not the pristine canvas: a handed-off
     // capture keeps its whole monitor underneath, but the window should hug
@@ -537,8 +537,8 @@ int main(int argc, char **argv) {
     rules->setFuture(QtConcurrent::run([floatingWindow] {
       hyprctlOutput({QStringLiteral("eval"), editorFloatRuleScript(floatingWindow)});
       hyprctlOutput({QStringLiteral("eval"),
-                     QStringLiteral("hl.window_rule({ name = \"omasnap-editor-opaque\", "
-                                    "match = { title = \"^omasnap( .+)?$\" }, opacity = 1 })")});
+                     QStringLiteral("hl.window_rule({ name = \"snip-editor-opaque\", "
+                                    "match = { title = \"^snip( .+)?$\" }, opacity = 1 })")});
     }));
     const int result = application.exec();
     // The closed editor may still be retaining its recent document. A fresh
@@ -556,7 +556,7 @@ int main(int argc, char **argv) {
     qCritical() << "Could not create capture overlay layer";
     return 1;
   }
-  layerWindow->setScope(QStringLiteral("omasnap"));
+  layerWindow->setScope(QStringLiteral("snip"));
   layerWindow->setScreen(targetScreen);
   layerWindow->setLayer(LayerShellQt::Window::LayerOverlay);
   LayerShellQt::Window::Anchors anchors;

@@ -38,7 +38,7 @@ bool runImageCheck(QString &error) {
 
 /** Checks that a text-only clipboard reports a clear failure. */
 bool runTextOnlyCheck(QString &error) {
-  qputenv("OMASNAP_TEST_CLIPBOARD_TEXT_ONLY", "1");
+  qputenv("SNIP_TEST_CLIPBOARD_TEXT_ONLY", "1");
   QImage image(1, 1, QImage::Format_ARGB32);
   QString clipboardError;
   if (loadClipboardImage(image, clipboardError) || !image.isNull() ||
@@ -52,8 +52,8 @@ bool runTextOnlyCheck(QString &error) {
 
 /** Checks that a failed image transfer keeps the wl-paste error. */
 bool runReadFailureCheck(QString &error) {
-  qunsetenv("OMASNAP_TEST_CLIPBOARD_TEXT_ONLY");
-  qputenv("OMASNAP_TEST_CLIPBOARD_READ_FAILURE", "1");
+  qunsetenv("SNIP_TEST_CLIPBOARD_TEXT_ONLY");
+  qputenv("SNIP_TEST_CLIPBOARD_READ_FAILURE", "1");
   QImage image;
   QString clipboardError;
   if (loadClipboardImage(image, clipboardError) || !image.isNull() ||
@@ -90,7 +90,7 @@ bool runClipboardSmoke(QString &error) {
       "#!/usr/bin/env bash\n"
       "set -euo pipefail\n"
       "if [[ \"${1:-}\" == \"--list-types\" ]]; then\n"
-      "  if [[ -n \"${OMASNAP_TEST_CLIPBOARD_TEXT_ONLY:-}\" ]]; then\n"
+      "  if [[ -n \"${SNIP_TEST_CLIPBOARD_TEXT_ONLY:-}\" ]]; then\n"
       "    printf 'text/plain;charset=utf-8\\n'\n"
       "  else\n"
       "    printf 'text/plain\\nimage/png\\n'\n"
@@ -99,11 +99,11 @@ bool runClipboardSmoke(QString &error) {
       "fi\n"
       "if [[ \"${1:-}\" == \"--no-newline\" && \"${2:-}\" == \"--type\" "
       "&& \"${3:-}\" == \"image/png\" ]]; then\n"
-      "  if [[ -n \"${OMASNAP_TEST_CLIPBOARD_READ_FAILURE:-}\" ]]; then\n"
+      "  if [[ -n \"${SNIP_TEST_CLIPBOARD_READ_FAILURE:-}\" ]]; then\n"
       "    printf 'clipboard changed before image transfer\\n' >&2\n"
       "    exit 1\n"
       "  fi\n"
-      "  cat -- \"$OMASNAP_TEST_CLIPBOARD_IMAGE\"\n"
+      "  cat -- \"$SNIP_TEST_CLIPBOARD_IMAGE\"\n"
       "  exit 0\n"
       "fi\n"
       "exit 1\n");
@@ -115,30 +115,30 @@ bool runClipboardSmoke(QString &error) {
   const bool pathWasSet = qEnvironmentVariableIsSet("PATH");
   const QByteArray oldPath = qgetenv("PATH");
   const bool imageWasSet =
-      qEnvironmentVariableIsSet("OMASNAP_TEST_CLIPBOARD_IMAGE");
-  const QByteArray oldImage = qgetenv("OMASNAP_TEST_CLIPBOARD_IMAGE");
+      qEnvironmentVariableIsSet("SNIP_TEST_CLIPBOARD_IMAGE");
+  const QByteArray oldImage = qgetenv("SNIP_TEST_CLIPBOARD_IMAGE");
   const bool textOnlyWasSet =
-      qEnvironmentVariableIsSet("OMASNAP_TEST_CLIPBOARD_TEXT_ONLY");
-  const QByteArray oldTextOnly = qgetenv("OMASNAP_TEST_CLIPBOARD_TEXT_ONLY");
+      qEnvironmentVariableIsSet("SNIP_TEST_CLIPBOARD_TEXT_ONLY");
+  const QByteArray oldTextOnly = qgetenv("SNIP_TEST_CLIPBOARD_TEXT_ONLY");
   const bool readFailureWasSet =
-      qEnvironmentVariableIsSet("OMASNAP_TEST_CLIPBOARD_READ_FAILURE");
+      qEnvironmentVariableIsSet("SNIP_TEST_CLIPBOARD_READ_FAILURE");
   const QByteArray oldReadFailure =
-      qgetenv("OMASNAP_TEST_CLIPBOARD_READ_FAILURE");
+      qgetenv("SNIP_TEST_CLIPBOARD_READ_FAILURE");
   const auto restoreEnvironment = qScopeGuard([=] {
     pathWasSet ? qputenv("PATH", oldPath) : qunsetenv("PATH");
-    imageWasSet ? qputenv("OMASNAP_TEST_CLIPBOARD_IMAGE", oldImage)
-                : qunsetenv("OMASNAP_TEST_CLIPBOARD_IMAGE");
+    imageWasSet ? qputenv("SNIP_TEST_CLIPBOARD_IMAGE", oldImage)
+                : qunsetenv("SNIP_TEST_CLIPBOARD_IMAGE");
     textOnlyWasSet
-        ? qputenv("OMASNAP_TEST_CLIPBOARD_TEXT_ONLY", oldTextOnly)
-        : qunsetenv("OMASNAP_TEST_CLIPBOARD_TEXT_ONLY");
+        ? qputenv("SNIP_TEST_CLIPBOARD_TEXT_ONLY", oldTextOnly)
+        : qunsetenv("SNIP_TEST_CLIPBOARD_TEXT_ONLY");
     readFailureWasSet
-        ? qputenv("OMASNAP_TEST_CLIPBOARD_READ_FAILURE", oldReadFailure)
-        : qunsetenv("OMASNAP_TEST_CLIPBOARD_READ_FAILURE");
+        ? qputenv("SNIP_TEST_CLIPBOARD_READ_FAILURE", oldReadFailure)
+        : qunsetenv("SNIP_TEST_CLIPBOARD_READ_FAILURE");
   });
   qputenv("PATH", directory.path().toUtf8() + ':' + oldPath);
-  qputenv("OMASNAP_TEST_CLIPBOARD_IMAGE", imagePath.toUtf8());
-  qunsetenv("OMASNAP_TEST_CLIPBOARD_TEXT_ONLY");
-  qunsetenv("OMASNAP_TEST_CLIPBOARD_READ_FAILURE");
+  qputenv("SNIP_TEST_CLIPBOARD_IMAGE", imagePath.toUtf8());
+  qunsetenv("SNIP_TEST_CLIPBOARD_TEXT_ONLY");
+  qunsetenv("SNIP_TEST_CLIPBOARD_READ_FAILURE");
 
   return runImageCheck(error) && runTextOnlyCheck(error) &&
          runReadFailureCheck(error);
@@ -168,18 +168,18 @@ bool runClipboardSizeLimitSmoke(QString &error) {
       "set -euo pipefail\n"
       "if [[ \"${1:-}\" == \"--list-types\" ]]; then\n"
       "  printf 'image/png\\n'\n"
-      "  [[ -z \"${OMASNAP_TEST_CLIPBOARD_BMP:-}\" ]] || printf 'image/bmp\\n'\n"
+      "  [[ -z \"${SNIP_TEST_CLIPBOARD_BMP:-}\" ]] || printf 'image/bmp\\n'\n"
       "  exit 0\n"
       "fi\n"
       "if [[ \"${1:-}\" == \"--no-newline\" && \"${2:-}\" == \"--type\" "
       "&& \"${3:-}\" == \"image/png\" ]]; then\n"
       "  printf '\\x89PNG\\r\\n\\x1a\\n'\n"
       "  head -c 4194304 /dev/zero\n"
-      "  : > \"$OMASNAP_TEST_CLIPBOARD_SERVED\"\n"
+      "  : > \"$SNIP_TEST_CLIPBOARD_SERVED\"\n"
       "  exit 0\n"
       "fi\n"
       "if [[ \"${3:-}\" == \"image/bmp\" ]]; then\n"
-      "  cat \"$OMASNAP_TEST_CLIPBOARD_BMP\"\n"
+      "  cat \"$SNIP_TEST_CLIPBOARD_BMP\"\n"
       "  exit 0\n"
       "fi\n"
       "exit 1\n");
@@ -192,11 +192,11 @@ bool runClipboardSizeLimitSmoke(QString &error) {
   const QByteArray oldPath = qgetenv("PATH");
   const auto restoreEnvironment = qScopeGuard([oldPath] {
     qputenv("PATH", oldPath);
-    qunsetenv("OMASNAP_TEST_CLIPBOARD_SERVED");
-    qunsetenv("OMASNAP_TEST_CLIPBOARD_BMP");
+    qunsetenv("SNIP_TEST_CLIPBOARD_SERVED");
+    qunsetenv("SNIP_TEST_CLIPBOARD_BMP");
   });
   qputenv("PATH", directory.path().toUtf8() + ':' + oldPath);
-  qputenv("OMASNAP_TEST_CLIPBOARD_SERVED", QFile::encodeName(served));
+  qputenv("SNIP_TEST_CLIPBOARD_SERVED", QFile::encodeName(served));
 
   QImage image;
   QString clipboardError;
@@ -226,7 +226,7 @@ bool runClipboardSizeLimitSmoke(QString &error) {
     error = QStringLiteral("Could not write the fallback clipboard image");
     return false;
   }
-  qputenv("OMASNAP_TEST_CLIPBOARD_BMP", QFile::encodeName(bmp));
+  qputenv("SNIP_TEST_CLIPBOARD_BMP", QFile::encodeName(bmp));
   if (!loadClipboardImage(image, clipboardError, kTestLimitBytes) ||
       image.size() != QSize(3, 2)) {
     error = QStringLiteral("An oversized clipboard format stopped a smaller "

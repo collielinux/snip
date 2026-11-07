@@ -36,7 +36,7 @@ namespace {
 using Values = QHash<QString, QString>;
 QPointer<ChromeThemeWatcher> applicationTheme;
 
-// Omarchy's color files use scalar assignments and section headers. Read just
+// Collie's color files use scalar assignments and section headers. Read just
 // that data subset, including inline comments and both TOML quote styles; no
 // Lua, template evaluation, or general TOML dependency is involved.
 Values readValues(const QString &path) {
@@ -91,7 +91,7 @@ QColor parseColor(QString value) {
   const auto match = hyprColor.match(value);
   if (match.hasMatch())
     value = QLatin1Char('#') + match.captured(1) + match.captured(2);
-  // Omarchy uses CSS RRGGBBAA; QColor's eight-digit syntax is AARRGGBB.
+  // Collie uses CSS RRGGBBAA; QColor's eight-digit syntax is AARRGGBB.
   if (value.startsWith(QLatin1Char('#')) && value.size() == 9)
     value = QLatin1Char('#') + value.right(2) + value.mid(1, 6);
   return QColor::fromString(value);
@@ -258,7 +258,7 @@ QString ChromeTheme::fileDialogStyleSheet() const {
 
 QString chromeThemeDirectory() {
   return QDir::home().filePath(
-      QStringLiteral(".local/state/omarchy/current/theme"));
+      QStringLiteral(".local/state/collie/current/theme"));
 }
 
 ChromeTheme loadChromeTheme(const QString &directory) {
@@ -353,7 +353,7 @@ ChromeThemeWatcher::ChromeThemeWatcher(const QString &directory,
   connect(&files_, &QFileSystemWatcher::fileChanged, this,
           [this] { debounce_.start(); });
   connect(&files_, &QFileSystemWatcher::directoryChanged, this, [this] {
-    // Omarchy swaps the whole theme directory. Reattach child watches even
+    // Collie swaps the whole theme directory. Reattach child watches even
     // when the new files have the same paths as the old inodes.
     rearm_ = true;
     debounce_.start();

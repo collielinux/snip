@@ -4,5 +4,5 @@
 
 enum class PinLifetime { Timed, Persistent };
 
-/** Runs a detached pinned-image window using the current Omasnap process. */
+/** Runs a detached pinned-image window using the current Snip process. */
 [[nodiscard]] int runPinnedCapture(const QString &path, PinLifetime lifetime);

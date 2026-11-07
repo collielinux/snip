@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
-Name=Omasnap
+Name=Snip
 Comment=Capture and annotate a screenshot
-Exec=omasnap
+Exec=snip
 Icon=camera-photo
 Terminal=false
 Categories=Graphics;

@@ -15,7 +15,7 @@ class QPainter;
 /// The typeface for overlay chrome text (toolbar labels, hotkey legend,
 /// tooltips): pinned in code, never the platform theme's system font, so
 /// startup does not depend on a theme plugin and the look is the same on
-/// every install. Adwaita Sans is the stock Omarchy UI font; Noto Sans is
+/// every install. Adwaita Sans is the stock Collie UI font; Noto Sans is
 /// the bundled fallback.
 [[nodiscard]] QFont chromeFont(int pixelSize, bool bold = false);
 /// The application-wide default font, installed by main() before any widget
@@ -26,7 +26,7 @@ class QPainter;
 [[nodiscard]] QFont chromeDefaultFont();
 /// Monospace counterpart for numeric readouts: fontconfig's `monospace`
 /// alias, which is what the fixed-font lookup resolved to under every theme
-/// (on Omarchy, the face `omarchy-font-set` chose).
+/// (on Collie, the face `collie-font-set` chose).
 [[nodiscard]] QFont chromeMonoFont(int pixelSize, bool bold = false);
 
 /// The badge naming what the overlay is doing, centered at the top, with the ×

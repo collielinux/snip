@@ -50,7 +50,7 @@ void configureCaptureCommandLine(QCommandLineParser &parser, bool beforeQt) {
   }
   parser.setApplicationDescription(QStringLiteral(
       "Native Wayland screenshot and annotation overlay for Hyprland and "
-      "Omarchy.\n"
+      "Collie.\n"
       "\n"
       "With no target, drag for a region, click a window, or click open "
       "space for\nthe full focused monitor. Captures save, copy to the clipboard, "
@@ -58,7 +58,7 @@ void configureCaptureCommandLine(QCommandLineParser &parser, bool beforeQt) {
       "it, or Edit to annotate.\n"
       "Use --editor to edit before output.\n"
       "\n"
-      "Only one capture overlay runs at a time. Starting omasnap again while "
+      "Only one capture overlay runs at a time. Starting snip again while "
       "an\noverlay is open dismisses it: the running instance is asked to "
       "quit and the\nnew process exits without capturing, so the same hotkey "
       "opens and closes the\noverlay. Quick output (--copy, --save) dismisses "
@@ -94,7 +94,7 @@ void configureCaptureCommandLine(QCommandLineParser &parser, bool beforeQt) {
       QStringLiteral("notify"),
       QStringLiteral("Announce saved captures in a notification with Open and "
                      "Edit buttons instead of a preview. Needs an "
-                     "omarchy-notification-send that takes --action."));
+                     "collie-notification-send that takes --action."));
   parser.addOption(notifyOption);
   QCommandLineOption recentOption(QStringLiteral("recent"), QString(),
                                   QStringLiteral("id"));
@@ -124,7 +124,7 @@ void configureCaptureCommandLine(QCommandLineParser &parser, bool beforeQt) {
       QStringLiteral("editor"),
       QStringLiteral("Edit before output, using overlay (fullscreen) or "
                      "window (a normal compositor window). Also configurable "
-                     "as [editor] mode in omasnap.conf; W switches a live "
+                     "as [editor] mode in snip.conf; W switches a live "
                      "editor between the two."),
       QStringLiteral("mode"));
   parser.addOption(editorOption);

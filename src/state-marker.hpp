@@ -1,4 +1,4 @@
-/** @fileoverview Remembered overlay choices, each an empty file in omasnap's
+/** @fileoverview Remembered overlay choices, each an empty file in snip's
  *  state directory: present means the choice is set. */
 #pragma once
 
